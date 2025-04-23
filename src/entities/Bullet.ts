@@ -17,13 +17,13 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
 
   // Called by the group when the bullet is fired
   fire(x: number, y: number, angle: number, speed: number) {
-    this.body.reset(x, y);
+    this.body?.reset(x, y);
     this.setActive(true);
     this.setVisible(true);
     this.setAngle(Phaser.Math.RadToDeg(angle + Math.PI / 2)); // Adjust angle like the player
 
     // Calculate velocity based on angle and speed
-    this.scene.physics.velocityFromRotation(angle, speed, this.body.velocity);
+    this.scene.physics.velocityFromRotation(angle, speed, this.body?.velocity);
 
     this.timeCreated = this.scene.time.now; // Reset lifespan timer
   }
@@ -35,7 +35,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
     if (time - this.timeCreated > this.lifespan) {
       this.setActive(false);
       this.setVisible(false);
-      this.body.stop(); // Stop physics simulation
+      this.body?.stop(); // Stop physics simulation
     }
   }
 }

@@ -32,6 +32,11 @@ export class GameScene extends Phaser.Scene {
   playerHealth: number = 100;
   score: number = 0;
 
+  // Add a reference for the Enter key
+  enterKey!: Phaser.Input.Keyboard.Key;
+  // Add a reference for the Space key
+  spaceKey!: Phaser.Input.Keyboard.Key;
+
   constructor() {
     super({ key: "GameScene" });
   }
@@ -95,31 +100,21 @@ export class GameScene extends Phaser.Scene {
     // --- Initialize Keyboard Input ---
     // Use non-null assertion (!) as keyboard is guaranteed to exist here
     this.cursors = this.input.keyboard!.createCursorKeys();
+    // Add the Enter key
+    this.enterKey = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ENTER
+    );
+    // Add the Space key
+    this.spaceKey = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
     console.log("Keyboard input initialized");
     // -------------------------------
 
     // --- Setup Mouse Input for Shooting ---
-    // Add underscore to indicate pointer is intentionally unused in this specific callback implementation
-    this.input.on("pointerdown", (_pointer: Phaser.Input.Pointer) => {
-      // Check if enough time has passed since the last shot
-      if (this.time.now > this.lastFired) {
-        const bullet = this.bullets.get() as Bullet; // Get an inactive bullet
-
-        if (bullet) {
-          bullet.setScale(0.15); // Set scale explicitly here
-          // Fire the bullet from the player's position and angle
-          bullet.fire(
-            this.player.x,
-            this.player.y,
-            this.player.rotation,
-            this.bulletSpeed
-          );
-          // Update the last fired time
-          this.lastFired = this.time.now + this.fireRate;
-          // Optional: Play shoot sound
-          // this.sound.play('shootSound');
-        }
-      }
+    // Remove unused _pointer parameter
+    this.input.on("pointerdown", () => {
+      this.attemptFire(); // Call the shared fire method
     });
     console.log("Shooting input initialized");
     // -----------------------------------
@@ -240,8 +235,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   handleBulletEnemyCollision(
-    bulletGameObject: any, // Use 'any' to bypass strict type checking for overlap
-    enemyGameObject: any // Use 'any' to bypass strict type checking for overlap
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bulletGameObject: any, // Use 'any' for compatibility with Phaser overlap callback
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    enemyGameObject: any // Use 'any' for compatibility with Phaser overlap callback
   ) {
     const bullet = bulletGameObject as Bullet; // Cast to Bullet
     const enemy = enemyGameObject as EnemyWithHealth; // Cast to EnemyWithHealth
@@ -292,8 +289,10 @@ export class GameScene extends Phaser.Scene {
 
   // --- Add Player/Enemy Collision Handler ---
   handlePlayerEnemyCollision(
-    _playerGameObject: any, // Use 'any' and underscore
-    enemyGameObject: any // Use 'any'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _playerGameObject: any, // Keep underscore, use 'any' for compatibility
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    enemyGameObject: any // Use 'any' for compatibility
   ) {
     // No need to cast playerGameObject if it's not used directly
     const enemy = enemyGameObject as Phaser.Physics.Arcade.Sprite;
@@ -340,8 +339,30 @@ export class GameScene extends Phaser.Scene {
   }
   // ----------------------------------------
 
-  // Add underscores to indicate time and _delta are intentionally unused
-  update(_time: number, _delta: number) {
+  // Method to handle firing logic
+  attemptFire() {
+    // Check if enough time has passed since the last shot
+    if (this.time.now > this.lastFired) {
+      const bullet = this.bullets.get() as Bullet; // Get an inactive bullet
+
+      if (bullet) {
+        bullet.setScale(0.1); // Set scale explicitly here
+        // Fire the bullet from the player's position and angle
+        bullet.fire(
+          this.player.x,
+          this.player.y,
+          this.player.rotation,
+          this.bulletSpeed
+        );
+        // Update the last fired time
+        this.lastFired = this.time.now + this.fireRate;
+        // Optional: Play shoot sound
+        // this.sound.play('shootSound');
+      }
+    }
+  }
+
+  update() {
     // Exit if player health is 0 or less
     if (this.playerHealth <= 0) {
       return;
@@ -415,6 +436,16 @@ export class GameScene extends Phaser.Scene {
     // Set the player's rotation directly
     this.player.setRotation(angle);
     // ---------------------------
+
+    // --- Handle Firing Input ---
+    // Check if Enter key or Space key is pressed
+    if (
+      Phaser.Input.Keyboard.JustDown(this.enterKey) ||
+      Phaser.Input.Keyboard.JustDown(this.spaceKey)
+    ) {
+      this.attemptFire(); // Call the shared fire method
+    }
+    // -------------------------
 
     // --- Enemy Rotation (Optional) ---
     // Make enemies face the direction they are moving

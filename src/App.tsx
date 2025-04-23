@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./styles/App.css"; // Updated CSS import path
 import GameCanvas from "./components/GameCanvas";
 import HUD from "./components/HUD"; // Import the HUD

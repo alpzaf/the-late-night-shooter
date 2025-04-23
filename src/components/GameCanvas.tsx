@@ -12,8 +12,8 @@ const GameCanvas: React.FC = () => {
     if (gameContainerRef.current && !gameInstanceRef.current) {
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+        width: 1280, // Example: Changed from 800
+        height: 720, // Example: Changed from 600
         parent: gameContainerRef.current,
         // Use the imported scenes
         scene: [BootScene, PreloadScene, GameScene], // BootScene will start first

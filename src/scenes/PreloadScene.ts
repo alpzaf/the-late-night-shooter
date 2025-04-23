@@ -12,7 +12,7 @@ export class PreloadScene extends Phaser.Scene {
     // --- Load New Player Asset ---
     this.load.image(
       "player_man_blue",
-      "assets/sprites/PNG/Man Blue/manBlue_gun.png"
+      "assets/sprites/PNG/Robot 1/robot1_gun.png"
     );
     // ---------------------------
 
