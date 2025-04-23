@@ -1,0 +1,18 @@
+/* src/components/HUD.css */
+.hud-container {
+  position: absolute; /* Position it over the canvas */
+  top: 10px;
+  left: 10px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 10px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  z-index: 10; /* Ensure it's above the canvas */
+  pointer-events: none; /* Allow clicks to pass through to the game */
+}
+
+.hud-score,
+.hud-health {
+  margin-bottom: 5px;
+}
